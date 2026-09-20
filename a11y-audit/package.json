@@ -1,0 +1,10 @@
+{
+  "name": "a11y-audit",
+  "version": "1.0.0",
+  "description": "DOM 无障碍审计工具：对比度、ARIA、焦点顺序、键盘可达性检测",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "demo": "python3 -m http.server 8080"
+  }
+}

@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Known issues — a11y audit demo</title>
+  <style>
+    body { font: 15px/1.6 system-ui, sans-serif; margin: 2rem; color: #111; }
+    section { border: 1px solid #ddd; border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+    .dim { color: #b4b4b4; background: #fff; }
+    .gray-on-white { color: #9a9a9a; }
+    .kill-focus button { outline: none; }
+    .clickable { cursor: pointer; background: #eef; padding: .4rem .8rem; border-radius: 4px; display: inline-block; }
+    .toolbar { position: sticky; top: 0; background: #fff; padding: .8rem 0; border-bottom: 1px solid #eee; z-index: 10; }
+    button.run { font-size: 1rem; padding: .5rem 1rem; }
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <button class="run" id="run">Run accessibility audit</button>
+    <span id="status"></span>
+  </div>
+
+  <h1>Demo page with known accessibility defects</h1>
+
+  <section>
+    <h2>Contrast</h2>
+    <p class="dim">This text is #b4b4b4 on white — it fails WCAG AA (4.5:1).</p>
+    <p class="gray-on-white" style="font-weight:700;font-size:25px">
+      This bold 25px text is #9a9a9a — it also fails the 3:1 large-text threshold.
+    </p>
+  </section>
+
+  <section>
+    <h2>Images and names</h2>
+    <img src="data:image/gif;base64,R0lGODlhAQABAAAAACw=" width="40" height="40">
+    <button></button>
+    <a href="#" style="color:#b4b4b4"></a>
+  </section>
+
+  <section>
+    <h2>Forms</h2>
+    <input type="email" id="email-field" placeholder="Email (no label)">
+  </section>
+
+  <section>
+    <h2>Keyboard &amp; focus order</h2>
+    <div class="clickable" role="button" id="custom-btn" tabindex="0">Custom "button" — click only</div>
+    <span tabindex="3" style="margin-left:1rem">tabindex 3 jumps the order</span>
+    <p class="kill-focus"><button type="button">outline:none button</button></p>
+  </section>
+
+  <section>
+    <h2>ARIA</h2>
+    <div role="scrollbar-of-destiny">Invalid role</div>
+    <button aria-labelledby="does-not-exist">Labelled by missing id</button>
+    <span role="presentation" tabindex="0">presentation on focusable</span>
+    <span id="dup">a</span><span id="dup">b</span>
+  </section>
+
+  <section>
+    <h2>Custom element (Shadow DOM)</h2>
+    <bad-card></bad-card>
+  </section>
+
+  <script type="module">
+    class BadCard extends HTMLElement {
+      connectedCallback() {
+        const root = this.attachShadow({ mode: 'open' });
+        root.innerHTML = `
+          <style>
+            h3 { color: #c0c0c0; }
+            .ghost-btn { outline: none; }
+          </style>
+          <h1>Card title</h1>
+          <h3>Shadow heading skips from h1 to h3</h3>
+          <p style="color:#b8b8b8">Dim text inside shadow root.</p>
+          <button class="ghost-btn"></button>
+          <input type="text" placeholder="shadow input, no label">
+          <a href="#" style="color:#bbb"></a>
+        `;
+        // click-only widget inside shadow
+        const chip = document.createElement('div');
+        chip.setAttribute('role', 'button');
+        chip.textContent = 'shadow click chip';
+        chip.addEventListener('click', () => {});
+        root.appendChild(chip);
+        // make the light-DOM custom widget a click-only widget too
+      }
+    }
+    customElements.define('bad-card', BadCard);
+
+    document.getElementById('custom-btn').addEventListener('click', () => {});
+  </script>
+
+  <script type="module" src="./runner.js"></script>
+</body>
+</html>

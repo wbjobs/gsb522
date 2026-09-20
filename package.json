@@ -1,0 +1,14 @@
+{
+  "name": "dom-a11y-audit",
+  "version": "1.0.0",
+  "description": "Zero-dependency in-browser DOM accessibility auditor (contrast, ARIA, focus order, keyboard) with Shadow DOM support, configurable rules, ignore lists, workers and report export.",
+  "type": "module",
+  "main": "src/platform/node/index.js",
+  "browser": "src/platform/browser/index.js",
+  "scripts": {
+    "test": "node --test",
+    "demo": "python3 -m http.server 8080 -d ."
+  },
+  "keywords": ["a11y", "accessibility", "wcag", "contrast", "aria", "shadow-dom"],
+  "license": "MIT"
+}
